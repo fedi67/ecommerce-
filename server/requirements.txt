@@ -4,3 +4,7 @@ sqlalchemy
 psycopg2-binary
 google-genai
 python-dotenv
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+pgvector

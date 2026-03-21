@@ -1,69 +1,190 @@
 /* --- IMPORTS DE POLICES --- */
-/* Playfair Display pour le côté "Luxe/Magazine" et Lato pour la lisibilité */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;700&display=swap');
 
 /* --- CONFIGURATION DE BASE --- */
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
   width: 100vw;
-  overflow: hidden; /* Empêche le scroll global */
-  font-family: 'Lato', sans-serif;
-  color: #333;
+  font-family: 'Outfit', sans-serif !important;
+  /* Remplacement de Lato par Outfit */
+  background-color: #000;
+  overflow-y: auto !important;
+  /* Force scrolling */
+  overflow-x: hidden;
 }
 
-/* Le conteneur principal qui divise l'écran */
+/* Le conteneur principal qui divise l'écran (pour /shop) */
 .app-container {
   display: flex;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
+  /* Keep /shop fixed */
+}
+
+/* --- LANDING PAGE STYLES --- */
+.landing-page-wrapper {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.hero-section {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+
+.section-container {
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.dark-bg {
+  background-color: #111;
+  color: white;
+}
+
+/* COLLECTIONS GRID */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.collection-card {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.collection-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+}
+
+.collection-card:hover .collection-image {
+  transform: scale(1.1);
+}
+
+.collection-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  text-align: left;
+}
+
+.collection-overlay h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  margin: 0 0 5px 0;
+}
+
+.collection-overlay p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* CTA SECTION */
+.cta-section {
+  padding: 100px 20px;
+  background: #f8f8f8;
+  text-align: center;
+}
+
+.cta-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
 }
 
 /* =========================================
    1. COLONNE GAUCHE : VISUEL & DIAPORAMA
    ========================================= */
 .visual-panel {
-  flex: 0 0 32%; /* Largeur fixe de 32% */
-  background-color: #000; /* Fond noir par défaut */
+  flex: 0 0 32%;
+  /* Largeur fixe de 32% */
+  background-color: #000;
+  /* Fond noir par défaut */
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centre le texte verticalement */
+  justify-content: center;
+  /* Centre le texte verticalement */
   align-items: center;
 }
 
 /* Conteneur des images d'arrière-plan */
 .slide-container {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
 }
 
 /* Style de chaque image du diaporama */
 .bg-slide {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
-  opacity: 0; /* Invisible par défaut */
+  opacity: 0;
+  /* Invisible par défaut */
   transform: scale(1);
-  transition: opacity 1.5s ease-in-out, transform 6s ease-out; /* Transition douce */
+  transition: opacity 1.5s ease-in-out, transform 6s ease-out;
+  /* Transition douce */
 }
 
 /* Classe ajoutée quand l'image est active */
 .bg-slide.active {
-  opacity: 0.6; /* On garde une opacité moyenne pour lire le texte */
-  transform: scale(1.1); /* Effet de zoom lent (Ken Burns effect) */
+  opacity: 0.6;
+  /* On garde une opacité moyenne pour lire le texte */
+  transform: scale(1.1);
+  /* Effet de zoom lent (Ken Burns effect) */
 }
 
 /* Le contenu texte au milieu de la colonne gauche */
 .slide-text-content {
   position: relative;
-  z-index: 2; /* Au-dessus des images */
+  z-index: 2;
+  /* Au-dessus des images */
   color: white;
   text-align: center;
   padding: 0 40px;
@@ -76,7 +197,7 @@ body {
   line-height: 1.1;
   margin: 0 0 15px 0;
   letter-spacing: 1px;
-  text-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  text-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 .slide-subtitle {
@@ -84,31 +205,32 @@ body {
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
-  border-top: 2px solid rgba(255,255,255,0.7);
+  border-top: 2px solid rgba(255, 255, 255, 0.7);
   display: inline-block;
   padding-top: 15px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* BARRE DE PROMOTION (Bas de la colonne gauche) */
-/* BARRE DE PROMOTION (Bas de la colonne gauche) */
-/* MODIFICATION : Couleur assortie (Noir Élégant Translucide) */
 .promo-bar-bottom {
   position: absolute;
-  bottom: 0; left: 0; width: 100%;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   height: 60px;
-  
+
   /* On remplace le rouge par un noir profond légèrement transparent */
-  background: rgba(0, 0, 0, 0.85); 
-  
+  background: rgba(0, 0, 0, 0.85);
+
   /* Petit effet de flou pour le modernisme */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  
+
   /* Une fine ligne blanche transparente au-dessus pour séparer de la photo */
   border-top: 1px solid rgba(255, 255, 255, 0.15);
-  
-  color: #ffffff; /* Texte en blanc pur */
+
+  color: #ffffff;
+  /* Texte en blanc pur */
   z-index: 10;
   display: flex;
   align-items: center;
@@ -127,8 +249,10 @@ body {
    2. COLONNE DROITE : CHAT & INTERFACE
    ========================================= */
 .chat-panel {
-  flex: 1; /* Prend tout l'espace restant (68%) */
-  background-color: #f8f9fa; /* Blanc cassé apaisant */
+  flex: 1;
+  /* Prend tout l'espace restant (68%) */
+  background-color: #f8f9fa;
+  /* Blanc cassé apaisant */
   display: flex;
   flex-direction: column;
   position: relative;
@@ -142,7 +266,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .chat-header h2 {
@@ -154,7 +278,7 @@ body {
 }
 
 .header-buttons button {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   border-radius: 4px;
@@ -169,15 +293,17 @@ body {
   scroll-behavior: smooth;
   display: flex;
   flex-direction: column;
-  gap: 25px; /* Espace entre les groupes de messages */
+  gap: 25px;
+  /* Espace entre les groupes de messages */
 }
 
 /* Masquer la barre de scroll pour un look plus propre (Webkit) */
 .messages-area::-webkit-scrollbar {
   width: 6px;
 }
+
 .messages-area::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
 
@@ -188,7 +314,7 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   position: relative;
-  box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -197,7 +323,8 @@ body {
   background: white;
   color: #333;
   border: 1px solid #e0e0e0;
-  border-radius: 2px 20px 20px 20px; /* Coin haut-gauche pointu */
+  border-radius: 2px 20px 20px 20px;
+  /* Coin haut-gauche pointu */
   align-self: flex-start;
 }
 
@@ -205,9 +332,11 @@ body {
 .bubble.user {
   background: #1a1a1a;
   color: white;
-  border-radius: 20px 2px 20px 20px; /* Coin haut-droit pointu */
+  border-radius: 20px 2px 20px 20px;
+  /* Coin haut-droit pointu */
   align-self: flex-end;
-  margin-left: auto; /* Force l'alignement à droite */
+  margin-left: auto;
+  /* Force l'alignement à droite */
 }
 
 /* Carte Produit dans le chat */
@@ -227,7 +356,7 @@ body {
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .product-card img {
@@ -238,7 +367,9 @@ body {
 }
 
 .product-info-col {
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Zone de saisie (Footer) */
@@ -260,13 +391,13 @@ body {
   border-radius: 4px;
   outline: none;
   transition: all 0.3s;
-  font-family: 'Lato', sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 
 .input-area input:focus {
   background: white;
   border-color: #333;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
 .send-btn-sq {
@@ -278,13 +409,16 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1.2rem;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.2s, transform 0.1s;
 }
 
 .send-btn-sq:hover {
   background: #333;
 }
+
 .send-btn-sq:active {
   transform: scale(0.95);
 }
@@ -295,78 +429,122 @@ body {
 
 /* Fait remonter le texte doucement */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Apparition en fondu pour le texte des promos */
 @keyframes fadeText {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Petit rebond à l'apparition des bulles */
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
-/* --- LE CARROUSEL DANS LE CHAT --- */
+
 /* --- LE CARROUSEL DANS LE CHAT --- */
 .carousel-wrapper {
   position: relative;
   width: 100%;
   /* Important : on limite la largeur max à celle du parent (la bulle ou le conteneur de message) */
-  max-width: 100%; 
+  max-width: 100%;
   margin-top: 10px;
-  overflow: hidden; /* Cache tout ce qui dépasse pour éviter de casser le layout */
+  overflow: hidden;
+  /* Cache tout ce qui dépasse pour éviter de casser le layout */
 }
 
 .carousel-track {
   display: flex;
   gap: 15px;
-  overflow-x: auto; /* Active le scroll horizontal */
+  overflow-x: auto;
+  /* Active le scroll horizontal */
   scroll-behavior: smooth;
   padding: 5px 5px 20px 5px;
-  
+
   /* Masquer la barre de scroll (optionnel mais plus joli) */
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  /* Firefox */
 }
-.carousel-track::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
+}
+
 /* BOUTON FLÈCHE */
 .carousel-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   background: white;
   border: 1px solid #eee;
   border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   z-index: 5;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s;
 }
-.carousel-nav-btn:hover { background: #111; color: white; transform: translateY(-50%) scale(1.1); }
-.nav-right { right: -15px; }
-.nav-left { left: -15px; }
+
+.carousel-nav-btn:hover {
+  background: #111;
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-right {
+  right: -15px;
+}
+
+.nav-left {
+  left: -15px;
+}
 
 /* LA CARTE PRODUIT ÉLÉGANTE */
 .carousel-card {
-  min-width: 200px; /* Largeur fixe importante */
+  min-width: 200px;
+  /* Largeur fixe importante */
   max-width: 200px;
   background: white;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #f0f0f0;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
   transition: transform 0.3s ease;
   cursor: pointer;
 }
 
 .carousel-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
 }
 
 /* Image du produit */
@@ -375,17 +553,24 @@ body {
   width: 100%;
   position: relative;
 }
+
 .card-image-box img {
-  width: 100%; height: 100%; object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Badge Caractéristique (ex: "Nouveau") */
 .feature-badge {
-  position: absolute; top: 10px; left: 10px;
-  background: rgba(255,255,255,0.9);
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
   padding: 4px 8px;
-  font-size: 0.7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   border-radius: 4px;
 }
 
@@ -393,72 +578,134 @@ body {
 .card-details {
   padding: 12px;
 }
+
 .card-name {
-  font-size: 0.95rem; font-weight: 400; color: #333;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #333;
   margin-bottom: 5px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 .card-meta {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.card-price { font-weight: 700; font-size: 1rem; }
-.card-material { font-size: 0.75rem; color: #888; font-style: italic; }
+
+.card-price {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.card-material {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
 /* --- STYLES DE LA PAGE D'ACCUEIL (HOME) --- */
 
 .home-container {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  z-index: 100; /* Au-dessus de tout */
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  color: white; text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  /* Au-dessus de tout */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
 }
 
 /* Fond sombre pour que le texte ressorte sur les photos */
 .overlay-home {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Assombrissement léger */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  /* Assombrissement léger */
   z-index: 1;
 }
 
 /* Le contenu central */
 .home-content {
-  position: relative; z-index: 10;
-  width: 100%; max-width: 800px;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 800px;
   padding: 20px;
   animation: slideUp 1s ease-out;
 }
 
 .home-title {
   font-family: 'Playfair Display', serif;
-  font-size: 5rem; line-height: 1; margin-bottom: 10px;
-  letter-spacing: -2px; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  font-size: 5rem;
+  line-height: 1;
+  margin-bottom: 10px;
+  letter-spacing: -2px;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .home-subtitle {
-  font-size: 1.2rem; text-transform: uppercase; letter-spacing: 4px;
-  margin-bottom: 50px; font-weight: 300;
-  border-bottom: 1px solid rgba(255,255,255,0.5); display: inline-block; padding-bottom: 10px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 50px;
+  font-weight: 300;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  display: inline-block;
+  padding-bottom: 10px;
 }
 
 /* LES BOUTONS D'ENTRÉE */
 .home-buttons {
-  display: flex; gap: 20px; justify-content: center; margin-bottom: 60px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 60px;
 }
 
 .btn-big {
-  padding: 15px 40px; font-size: 1rem; font-weight: 700; letter-spacing: 1px;
-  cursor: pointer; transition: all 0.3s; text-transform: uppercase;
+  padding: 15px 40px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
   min-width: 180px;
 }
 
 .btn-filled {
-  background: white; color: black; border: none;
+  background: white;
+  color: black;
+  border: none;
 }
-.btn-filled:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+
+.btn-filled:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
 
 .btn-outline {
-  background: transparent; color: white; border: 2px solid white;
+  background: transparent;
+  color: white;
+  border: 2px solid white;
 }
-.btn-outline:hover { background: white; color: black; }
+
+.btn-outline:hover {
+  background: white;
+  color: black;
+}
 
 /* --- NOUVEAU STYLE : SLEEK INFO BAR (Barre d'info élégante) --- */
 
@@ -468,12 +715,13 @@ body {
   margin-top: 50px;
   /* Fond noir profond et translucide */
   background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(20px); /* Flou important pour l'effet premium */
+  backdrop-filter: blur(20px);
+  /* Flou important pour l'effet premium */
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 20px 30px;
-  
+
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -498,15 +746,20 @@ body {
 
 /* Les nouvelles icônes SVG */
 .premium-icon {
-  color: #fff; /* Couleur blanche */
+  color: #fff;
+  /* Couleur blanche */
   opacity: 0.9;
+  font-size: 2rem;
+  /* Add size */
   transition: transform 0.3s ease;
 }
 
 /* Petit effet au survol du bloc entier */
 .info-item:hover .premium-icon {
-  transform: translateY(-3px); /* L'icône remonte légèrement */
-  color: #ff4757; /* Petite touche de couleur (optionnel, sinon laisser blanc) */
+  transform: translateY(-3px);
+  /* L'icône remonte légèrement */
+  color: #ff4757;
+  /* Petite touche de couleur (optionnel, sinon laisser blanc) */
 }
 
 .info-title {
@@ -521,15 +774,27 @@ body {
 .info-desc {
   font-size: 0.85rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7); /* Gris clair élégant */
+  color: rgba(255, 255, 255, 0.7);
+  /* Gris clair élégant */
   margin: 0;
-  font-family: 'Lato', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 300;
 }
 
 /* Adaptation Mobile : On empile tout */
 @media (max-width: 768px) {
-  .info-bar-container { flex-direction: column; gap: 30px; }
-  .info-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
-  .info-item:last-child { border-bottom: none; }
+  .info-bar-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .info-item {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
 }
