@@ -566,62 +566,74 @@ async def create_product(
 ):
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="Accès réservé.")
-    new_p = Product(
-        name=data.name, 
-        brand=data.brand,
-        description=data.description,
-        category=data.category,
-        gender=data.gender,
-        image_url=data.image_url,
-        attributes=data.attributes
-    )
-    db.add(new_p)
-    db.commit()
-    db.refresh(new_p)
-
-    # --- GENERATION DES EMBEDDINGS (VECTEUR IA) pour Synchronisation ---
+    
     try:
-        # On concatène le nom, la marque, la catégorie et la description pour un embedding riche
-        text_to_embed = f"{data.name} {data.brand or ''} {data.category or ''} {data.description}"
-        emb_res = client.models.embed_content(
-            model="models/gemini-embedding-001",
-            contents=text_to_embed
+        new_p = Product(
+            name=data.name, 
+            brand=data.brand,
+            description=data.description,
+            category=data.category,
+            gender=data.gender,
+            image_url=data.image_url,
+            attributes=data.attributes
         )
-        if emb_res.embeddings:
-            new_p.embedding = emb_res.embeddings[0].values
-            db.commit()
-            print(f"✨ [SYNC] Embedding généré pour le produit {new_p.id}")
+        db.add(new_p)
+        db.commit()
+        db.refresh(new_p)
+        print(f"✅ [DB] Produit créé: {new_p.id} ({new_p.name})")
+
+        # --- GENERATION DES EMBEDDINGS (VECTEUR IA) pour Synchronisation ---
+        try:
+            # On concatène le nom, la marque, la catégorie et la description pour un embedding riche
+            text_to_embed = f"{data.name} {data.brand or ''} {data.category or ''} {data.description}"
+            emb_res = client.models.embed_content(
+                model="models/gemini-embedding-001",
+                contents=text_to_embed
+            )
+            if emb_res.embeddings:
+                new_p.embedding = emb_res.embeddings[0].values
+                db.commit()
+                print(f"✨ [SYNC] Embedding généré pour le produit {new_p.id}")
+        except Exception as e:
+            print(f"⚠️ [WARN] Échec de la génération d'embedding : {e}")
+
+        # Create variants from the provided list
+        active_variants = data.variants or []
+        
+        # If no variants provided but a price exists, create a default "Unique" variant
+        if not active_variants and data.price and data.price > 0:
+            attrs = data.attributes or {}
+            active_variants.append(ProductVariantInput(
+                size="Unique",
+                stock=int(attrs.get("stock", 0)),
+                price=float(data.price if data.price is not None else 0.0)
+            ))
+
+        for v_data in active_variants:
+            attrs = data.attributes or {}
+            # Using more robust SKU: Prefix(3) + Size + Milliseconds (to avoid collisions)
+            sku_ts = datetime.now().strftime('%H%M%S%f')[:-3]
+            generated_sku = f"{data.name[:3].upper()}-{v_data.size}-{sku_ts}"
+            
+            new_v = ProductVariant(
+                product_id=new_p.id,
+                size=v_data.size,
+                color=attrs.get("color", "Unique"),
+                stock_quantity=v_data.stock,
+                price=v_data.price,
+                sku=generated_sku
+            )
+            db.add(new_v)
+        
+        db.commit()
+        print(f"📦 [DB] {len(active_variants)} variantes ajoutées pour {new_p.id}")
+        return {"id": new_p.id, "message": "Produit créé et synchronisé avec l'IA."}
     except Exception as e:
-        print(f"⚠️ [WARN] Échec de la génération d'embedding : {e}")
-        # On continue quand même la création du produit
-
-    # Create variants from the provided list
-    active_variants = data.variants or []
-    
-    # If no variants provided but a price exists, create a default "Unique" variant
-    if not active_variants and data.price and data.price > 0:
-        attrs = data.attributes or {}
-        # Fixed: mapping to correct Pydantic model
-        active_variants.append(ProductVariantInput(
-            size="Unique",
-            stock=int(attrs.get("stock", 0)),
-            price=float(data.price if data.price is not None else 0.0)
-        ))
-
-    for v_data in active_variants:
-        attrs = data.attributes or {}
-        new_v = ProductVariant(
-            product_id=new_p.id,
-            size=v_data.size,
-            color=attrs.get("color", "Unique"),
-            stock_quantity=v_data.stock,
-            price=v_data.price,
-            sku=f"{data.name[:3].upper()}-{v_data.size}-{datetime.now().strftime('%M%S')}"
-        )
-        db.add(new_v)
-    
-    db.commit()
-    return {"id": new_p.id, "message": "Produit créé et synchronisé avec l'IA."}
+        db.rollback()
+        import traceback
+        traceback.print_exc()
+        print(f"❌ [ERROR] Create product failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur interne lors de la création: {str(e)}")
 
 @app.delete("/api/admin/products/{product_id}")
 async def delete_product(

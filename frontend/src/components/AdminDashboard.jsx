@@ -267,9 +267,13 @@ const AdminDashboard = ({ onLogout }) => {
                 await fetchAdminData();
                 setIsProductModalOpen(false);
                 setSelectedProductId(data.id);
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                alert(`Erreur lors de la création : ${errData.detail || 'Erreur inconnue'}`);
             }
         } catch (err) {
             console.error("Erreur create product:", err);
+            alert("Erreur réseau ou serveur lors de la création du produit.");
         }
     };
 

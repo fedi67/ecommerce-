@@ -16,8 +16,7 @@ def seed_embeddings():
         print(f"Generating embeddings for {len(products)} products...")
         
         for p in products:
-            # Combine relevant info for embedding
-            text_to_embed = f"Nom: {p.name}. Categorie: {p.category}. Description: {p.description}"
+            text_to_embed = f"Nom: {p.name}. Categorie: {p.category}. Description: {p.description or ''}"
             
             try:
                 embedding_response = client.models.embed_content(
@@ -25,18 +24,22 @@ def seed_embeddings():
                     contents=text_to_embed
                 )
                 
-                # Update the product with the vector
-                p.embedding = embedding_response.embeddings[0].values
+                vec = embedding_response.embeddings[0].values
+                print(f"DEBUG: Vector length for {p.name}: {len(vec)}")
+                p.embedding = vec
                 db.add(p)
+                db.commit() # Commit each one to see where it fails
                 print(f"✓ Embedded: {p.name}")
             except Exception as e:
-                print(f"✗ Failed: {p.name} - {e}")
-        
-        db.commit()
-        print("Committing changes to database...")
+                db.rollback()
+                print(f"✗ Failed: {p.name} - {str(e)}")
+                import traceback
+                traceback.print_exc()
         
     except Exception as e:
         print(f"Fatal error: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         db.close()
 

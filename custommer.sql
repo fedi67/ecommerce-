@@ -1,7 +1,7 @@
 -- ==========================================
 -- TABLE CLIENTS (AUTHENTIFICATION)
 -- ==========================================
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50),
     email VARCHAR(100) UNIQUE NOT NULL,
