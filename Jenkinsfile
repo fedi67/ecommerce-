@@ -4,9 +4,8 @@ pipeline {
     environment {
         NODE_ENV = 'test'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
-        FRONTEND_IMAGE = "${DOCKER_REGISTRY}/p2m-frontend"
-        SERVER_IMAGE = "${DOCKER_REGISTRY}/p2m-server"
-        DOCKER_REGISTRY = credentials('dockerhub-username') ? "${credentials('dockerhub-username')}" : "your-dockerhub-username"
+        FRONTEND_IMAGE = "your-dockerhub-username/p2m-frontend"
+        SERVER_IMAGE = "your-dockerhub-username/p2m-server"
     }
 
     options {
@@ -257,11 +256,9 @@ pipeline {
 
     post {
         always {
-            node {
-                script {
-                    echo "🧹 Cleaning up..."
-                    sh 'docker system prune -f 2>&1 || true'
-                }
+            script {
+                echo "🧹 Cleaning up..."
+                sh 'docker system prune -f 2>&1 || true'
             }
         }
         success {
