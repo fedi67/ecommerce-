@@ -7,28 +7,42 @@ services:
       - "3000:80"
     depends_on:
       - server
+    networks:
+      - ecommerce-network
 
   server:
     image: your-dockerhub-username/p2m-server:latest
     ports:
       - "8000:8000"
     environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+      - DB_HOST=db
+      - DB_NAME=smart_db
+      - DB_PORT=5432
       - SECRET_KEY=staging-secret-key
       - GEMINI_API_KEY=staging-gemini-key
-      - DATABASE_URL=postgresql://user:password@db:5432/ecommerce_db
     depends_on:
       - db
+    networks:
+      - ecommerce-network
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_DB: ecommerce_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smart_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_staging:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
 
 volumes:
-  postgres_data:
+  postgres_data_staging:
+
+networks:
+  ecommerce-network:
+    driver: bridge
