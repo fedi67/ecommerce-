@@ -1,10 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import App from '../App'
+import { vi } from 'vitest'
+import App from './App'
 
-// Mock localStorage
+// Mock localStorage with proper default values
 const localStorageMock = {
-  getItem: vi.fn(),
+  getItem: vi.fn((key) => {
+    const store = {
+      'cart': '[]',
+      'userName': null,
+      'token': null,
+    };
+    return store[key] || null;
+  }),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),

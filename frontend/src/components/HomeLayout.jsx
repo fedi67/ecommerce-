@@ -15,8 +15,13 @@ export const Navbar = ({ userName, onLogout, onContact, onCartToggle, onLoginCli
 
   useEffect(() => {
     const updateCount = () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      setCount(cart.length);
+      try {
+        const cartData = localStorage.getItem('cart');
+        const cart = cartData ? JSON.parse(cartData) : [];
+        setCount(Array.isArray(cart) ? cart.length : 0);
+      } catch {
+        setCount(0);
+      }
     };
 
     updateCount();

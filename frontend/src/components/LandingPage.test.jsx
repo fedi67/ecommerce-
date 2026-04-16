@@ -3,9 +3,16 @@ import { BrowserRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 import LandingPage from '../components/LandingPage'
 
-// Mock localStorage
+// Mock localStorage with proper default values
 const localStorageMock = {
-  getItem: vi.fn(),
+  getItem: vi.fn((key) => {
+    const store = {
+      'cart': '[]',
+      'userName': null,
+      'token': null,
+    };
+    return store[key] || null;
+  }),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
