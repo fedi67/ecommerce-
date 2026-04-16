@@ -1,8 +1,11 @@
 FROM jenkins/jenkins:latest
 USER root
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Update package lists
+RUN apt-get update && apt-get upgrade -y
+
+# Install system dependencies and Node.js setup
+RUN apt-get install -y \
     curl \
     gnupg2 \
     lsb-release \
@@ -12,15 +15,20 @@ RUN apt-get update && apt-get install -y \
     docker.io \
     git \
     ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    build-essential
 
-# Install Node.js 18
+# Add NodeSource repository and install Node.js 18
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y nodejs
 
-# Fix Docker socket permissions
+# Verify installations
+RUN node --version && npm --version && python3 --version
+
+# Fix Docker socket permissions for jenkins user
 RUN usermod -aG docker jenkins
+
+# Clean up apt cache to reduce image size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Switch back to jenkins user
 USER jenkins
