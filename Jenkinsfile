@@ -86,8 +86,13 @@ pipeline {
             steps {
                 dir('server') {
                     script {
-                        echo "📦 Installing server dependencies..."
-                        sh 'pip install -q -r requirements.txt 2>&1 || true'
+                        echo "📦 Installing server dependencies using venv..."
+                        sh '''
+                            python3 -m venv venv || true
+                            . venv/bin/activate 2>/dev/null || true
+                            pip install --upgrade pip setuptools wheel 2>&1 || true
+                            pip install -r requirements.txt 2>&1 || true
+                        '''
                         
                         echo "🔍 Checking server code syntax..."
                         sh 'python3 -m py_compile *.py 2>&1 || true'
@@ -99,13 +104,17 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    echo "🐳 Building Docker images..."
-                    dir('frontend') {
-                        sh 'docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -t ${FRONTEND_IMAGE}:latest -f Dockerfile . 2>&1 || true'
-                    }
-                    dir('server') {
-                        sh 'docker build -t ${SERVER_IMAGE}:${DOCKER_TAG} -t ${SERVER_IMAGE}:latest -f Dockerfile . 2>&1 || true'
-                    }
+                    echo "🐳 Building Docker images (if Docker available)..."
+                    sh '''
+                        which docker > /dev/null 2>&1 && {
+                            cd frontend && docker build -t your-dockerhub-username/p2m-frontend:${DOCKER_TAG} -t your-dockerhub-username/p2m-frontend:latest -f Dockerfile . && cd ..
+                            cd server && docker build -t your-dockerhub-username/p2m-server:${DOCKER_TAG} -t your-dockerhub-username/p2m-server:latest -f Dockerfile . && cd ..
+                            echo "✅ Docker images built successfully"
+                        } || {
+                            echo "⚠️ Docker not available in this Jenkins instance"
+                            echo "Build Docker images manually or run: docker-compose build"
+                        }
+                    '''
                 }
             }
         }
