@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CONFIG from '../config';
 
 function Signup({ onClose, onSwitchLogin }) {
@@ -46,7 +46,7 @@ function Signup({ onClose, onSwitchLogin }) {
         setIsError(true);
         setMessage(data.detail || 'Une erreur est survenue.');
       }
-    } catch (error) {
+    } catch {
       setIsError(true);
       setMessage('Serveur indisponible.');
     }

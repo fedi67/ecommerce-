@@ -28,7 +28,7 @@ const allCollections = [
 const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
 
 /* --- INTERFACE SHOP --- */
-function ShopInterface({ onCartToggle, onLoginToggle, onSignupToggle, onContactToggle }) {
+function ShopInterface({ onLoginToggle, onSignupToggle, onContactToggle }) {
   const navigate = useNavigate();
   const [slidesData] = useState(() => shuffleArray(allCollections));
   const [inputValue, setInputValue] = useState("");

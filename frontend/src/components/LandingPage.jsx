@@ -13,8 +13,6 @@ const allCollections = [
     { id: 201, image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1400", title: "Souffle d'Été", subtitle: "Lin & Intemporel" },
 ];
 
-const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
-
 export default function LandingPage({ onCartToggle, onLoginToggle, onSignupToggle, onContactToggle }) {
     const navigate = useNavigate();
     const [slidesData] = useState(() => allCollections);

@@ -67,7 +67,7 @@ const ProductCarousel = ({ isOpen, onClose }) => {
                 const data = await response.json();
                 alert(`Erreur : ${data.detail || "Impossible de valider la commande"}`);
             }
-        } catch (error) {
+        } catch {
             alert("Serveur indisponible.");
         } finally {
             setSubmitting(false);

@@ -46,7 +46,7 @@ function Login({ onClose, onSwitchSignup }) {
       } else {
         setError(data.detail || 'Identifiants invalides.');
       }
-    } catch (err) {
+    } catch {
       setError('Serveur indisponible');
     }
   };

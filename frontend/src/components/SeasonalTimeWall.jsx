@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 /**
  * SeasonalTimeWall - A sophisticated Masonry Grid ("Mur du Temps")

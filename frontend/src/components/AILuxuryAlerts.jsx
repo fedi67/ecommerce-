@@ -62,7 +62,7 @@ export const AILuxuryAlerts = ({ alerts, markAllAlertsAsRead, fetchAlerts, unrea
     const extractLoss = (text) => {
         if (!text) return 0;
         // Robust extraction: Look for numbers with € or EUR, handling spaces/dots
-        const cleanText = text.replace(/[\s\.]/g, '');
+        const cleanText = text.replace(/[\s.]/g, '');
         const currencyMatch = cleanText.match(/(\d+)€|€(\d+)|(\d+)EUR|EUR(\d+)/i);
         if (currencyMatch) {
             const val = currencyMatch[1] || currencyMatch[2] || currencyMatch[3] || currencyMatch[4];
@@ -109,7 +109,7 @@ export const AILuxuryAlerts = ({ alerts, markAllAlertsAsRead, fetchAlerts, unrea
                 } else if (sortConfig.key === 'impact') {
                     const getVal = (item) => {
                         const base = item.metadata?.impact_ca || extractLoss(item.metadata?.analyse_financiere);
-                        return Number(String(base).replace(/[^\d\.]/g, '')) || 0;
+                        return Number(String(base).replace(/[^\d.]/g, '')) || 0;
                     };
                     valA = getVal(a);
                     valB = getVal(b);

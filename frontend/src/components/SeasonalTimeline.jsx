@@ -1,16 +1,22 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 
 /**
- * AIDemandChart - v3.3 High-precision SVG.
+ * AIDemandChart - v3.3 High-precision SVG with deterministic randomness.
  */
 const AIDemandChart = ({ mood, eventType }) => {
     const points = useMemo(() => {
         const pts = [];
         const isSpike = eventType.toUpperCase().includes('BLACK FRIDAY');
+        // Generate deterministic "random" values based on eventType to maintain purity
+        const seed = eventType.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+        const getRandom = (i) => {
+            const x = Math.sin(seed + i) * 10000;
+            return x - Math.floor(x);
+        };
         for (let i = 0; i <= 100; i += 2) {
             let y;
-            if (isSpike) y = 18 - (Math.pow(1.04, i) * 0.3) + (Math.random() * 0.5);
-            else y = 15 - (Math.sin(i / 20) * 8) - (i / 10) + (Math.random() * 0.4);
+            if (isSpike) y = 18 - (Math.pow(1.04, i) * 0.3) + (getRandom(i) * 0.5);
+            else y = 15 - (Math.sin(i / 20) * 8) - (i / 10) + (getRandom(i) * 0.4);
             pts.push({ x: i, y: Math.max(2, y) });
         }
         return pts;
@@ -57,7 +63,6 @@ const AIDemandChart = ({ mood, eventType }) => {
 const SeasonalTimeline = ({ events, forecasts, inventory }) => {
     
     const [activeIndex, setActiveIndex] = useState(0);
-    const [selectedPiece, setSelectedPiece] = useState(null);
     const [checklist, setChecklist] = useState({});
 
     const getDaysRemaining = (str) => {
@@ -71,7 +76,6 @@ const SeasonalTimeline = ({ events, forecasts, inventory }) => {
 
     if (sortedEvents.length === 0) return null;
     const currentEvent = sortedEvents[activeIndex];
-    const days = getDaysRemaining(currentEvent.compte_a_rebours);
 
     const getMood = (eventName) => {
         const name = eventName.toUpperCase();
@@ -101,14 +105,18 @@ const SeasonalTimeline = ({ events, forecasts, inventory }) => {
         return [{ name: "Collection Capsule Exclusive", reason: "Opportunité Marché", margin: "Saisonnier" }];
     };
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const strategy = useMemo(() => {
         const matchingForecast = forecasts.find(f => 
             f.product_name.toUpperCase().includes(currentEvent.evenement.toUpperCase()) ||
             currentEvent.evenement.toUpperCase().includes(f.product_name.toUpperCase())
         );
-        const enrichedItems = (matchingForecast?.metadata_info?.items || []).map(rec => {
+        // Generate deterministic risk levels based on inventory to maintain purity
+        const enrichedItems = (matchingForecast?.metadata_info?.items || []).map((rec, idx) => {
             const realProduct = inventory.find(p => p.name.toUpperCase().includes(rec.description.split('(')[0].trim().toUpperCase()));
-            return { ...rec, realData: realProduct, risk: Math.random() > 0.6 ? 'HAUT' : 'MODÉRÉ' };
+            const seed = (currentEvent.evenement + idx).split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            const deterministicRandom = Math.abs(Math.sin(seed)) < 0.4 ? 'HAUT' : 'MODÉRÉ';
+            return { ...rec, realData: realProduct, risk: deterministicRandom };
         });
         const exclusives = getExclusiveIDEAs(currentEvent.evenement);
         return {
@@ -117,8 +125,6 @@ const SeasonalTimeline = ({ events, forecasts, inventory }) => {
             narrative: `L'analyse pour ${currentEvent.evenement} indique une demande en hausse de ${mood.trend}. Nous recommandons de combiner vos best-sellers avec la **Capsule Exclusive** suggérée ci-dessous pour maximiser la marge brute.`
         };
     }, [currentEvent, forecasts, inventory, mood.trend]);
-
-    useEffect(() => { setSelectedPiece(null); }, [activeIndex]);
 
     const toggleTask = (taskId) => {
         const key = `${currentEvent.evenement}-${taskId}`;

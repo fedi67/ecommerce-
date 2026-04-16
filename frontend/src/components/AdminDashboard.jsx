@@ -72,7 +72,6 @@ const AdminDashboard = ({ onLogout }) => {
     const [activeTab, setActiveTab] = useState('overview');
     const [orderFilters, setOrderFilters] = useState({ email: '', product: '', status: '' });
     const [selectedProductId, setSelectedProductId] = useState(null);
-    const [feedbacks, setFeedbacks] = useState([]);
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [inventoryFilter, setInventoryFilter] = useState('all');
@@ -80,7 +79,6 @@ const AdminDashboard = ({ onLogout }) => {
     const [orderSort, setOrderSort] = useState({ key: null, direction: 'asc' });
     const [alerts, setAlerts] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
-    const [activeAlertCategory, setActiveAlertCategory] = useState(0); // 0: Ruptures, 1: Stocks Bas, 2: Historique
     const [seasonalEvents, setSeasonalEvents] = useState([]);
 
     const selectedProduct = inventory.find(p => p.id === selectedProductId);
@@ -94,11 +92,10 @@ const AdminDashboard = ({ onLogout }) => {
                 fetch(`${CONFIG.API_BASE_URL}/api/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } }),
                 fetch(`${CONFIG.API_BASE_URL}/api/admin/inventory`, { headers: { 'Authorization': `Bearer ${token}` } }),
                 fetch(`${CONFIG.API_BASE_URL}/api/admin/orders`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`${CONFIG.API_BASE_URL}/api/admin/customers`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`${CONFIG.API_BASE_URL}/api/admin/feedbacks`, { headers: { 'Authorization': `Bearer ${token}` } })
+                fetch(`${CONFIG.API_BASE_URL}/api/admin/customers`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
-            const [statsRes, invRes, ordersRes, custRes, feedRes] = results;
+            const [statsRes, invRes, ordersRes, custRes] = results;
 
             // Stats
             if (statsRes.status === 'fulfilled' && statsRes.value.ok) {
@@ -123,11 +120,6 @@ const AdminDashboard = ({ onLogout }) => {
                 setCustomers(data);
             } else {
                 setCustomers([]); // Clear if fetch fails, don't show demo data
-            }
-
-            // Feedbacks
-            if (feedRes.status === 'fulfilled' && feedRes.value.ok) {
-                setFeedbacks(await feedRes.value.json());
             }
 
             // Fetch Alerts separately (optional but good)
@@ -169,8 +161,6 @@ const AdminDashboard = ({ onLogout }) => {
         }
     };
 
-    const urgentCount = alerts.filter(a => a.alert_type === 'out_of_stock' && !a.is_read).length;
-    const warningCount = alerts.filter(a => a.alert_type === 'low_stock' && !a.is_read).length;
     const seasonalCount = alerts.filter(a => a.alert_type === 'seasonal_forecast' && !a.is_read).length;
 
     const markAlertAsRead = async (id) => {
@@ -208,6 +198,7 @@ const AdminDashboard = ({ onLogout }) => {
 
     useEffect(() => {
         fetchAdminData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -216,23 +207,6 @@ const AdminDashboard = ({ onLogout }) => {
         }, 4000);
         return () => clearInterval(interval);
     }, []);
-
-    const filterOrders = async () => {
-        const token = localStorage.getItem('token');
-        let url = `${CONFIG.API_BASE_URL}/api/admin/orders?`;
-        if (orderFilters.email) url += `client_email=${orderFilters.email}&`;
-        if (orderFilters.product) url += `product_name=${orderFilters.product}&`;
-        if (orderFilters.status) url += `status=${orderFilters.status}&`;
-
-        try {
-            const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) setOrders(await res.json());
-        } catch (err) {
-            console.error("Erreur filtre:", err);
-        }
-    };
 
     const updateStatus = async (orderId, newStatus) => {
         const token = localStorage.getItem('token');
@@ -293,20 +267,6 @@ const AdminDashboard = ({ onLogout }) => {
             if (res.ok) fetchAdminData();
         } catch (err) {
             console.error("Erreur delete variant:", err);
-        }
-    };
-
-    const deleteFeedback = async (id) => {
-        const token = localStorage.getItem('token');
-        if (!window.confirm("Supprimer cet avis ?")) return;
-        try {
-            const res = await fetch(`${CONFIG.API_BASE_URL}/api/admin/feedbacks/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) fetchAdminData();
-        } catch (err) {
-            console.error("Erreur delete feedback:", err);
         }
     };
 
@@ -1291,6 +1251,7 @@ const IntelligentProductModal = ({ isOpen, onClose, onCreate, currentSlide }) =>
         }, 5000); // Increased debounce to 5 seconds
 
         return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [desc, imageBase64, isOpen]);
 
     const handleImageUpload = (e) => {
