@@ -39,7 +39,7 @@ test.describe('Landing Page', () => {
     expect(cardCount).toBeGreaterThan(0)
   })
 
-  test('should have responsive design', async ({ page, browserName }) => {
+  test('should have responsive design', async ({ page }) => {
     // Test on mobile viewport
     await page.setViewportSize({ width: 375, height: 667 })
     await page.goto('/')
