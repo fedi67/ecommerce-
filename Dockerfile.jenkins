@@ -19,9 +19,41 @@ RUN apt-get install -y \
     ca-certificates \
     build-essential
 
-# Add NodeSource repository and install Node.js 18
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+# Add NodeSource repository and install Node.js 20 (required for Vite 7+)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
+
+# Install Playwright system dependencies (X11, GTK, audio libraries)
+RUN apt-get update && apt-get install -y \
+    libxcb-shm0 \
+    libx11-xcb1 \
+    libxrandr2 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxi6 \
+    libxfixes3 \
+    libgtk-3-0 \
+    libgdk-pixbuf2.0-0 \
+    libpangocairo-1.0-0 \
+    libpango-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libcairo2 \
+    libgio-2.0-0 \
+    libgobject-2.0-0 \
+    libglib2.0-0 \
+    libasound2 \
+    libxss1 \
+    libgconf-2-4 \
+    libxtst6 \
+    fontconfig \
+    fonts-liberation \
+    xfonts-encodings \
+    xfonts-utils \
+    libgl1-mesa-glx \
+    libxt6 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Verify installations
 RUN node --version && npm --version && python3 --version && docker --version

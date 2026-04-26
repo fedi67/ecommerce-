@@ -3,21 +3,18 @@
 // ===================================================
 // TESTING STRATEGY:
 // - Unit Tests (ESLint + Vitest): Run in CI pipeline ✅ FAST
-// - E2E Tests (Playwright): Run locally before push
-//   > npm run e2e       (headless mode)
-//   > npm run e2e:ui    (interactive mode)
+// - E2E Tests (Playwright): Run in CI pipeline ✅ COMPREHENSIVE
 //
 // REQUIREMENTS on Jenkins Host:
-// - Node.js 18+ (for frontend: npm)
+// - Node.js 20+ (for frontend: npm, Vite 7+, Playwright)
 // - Python 3.11+ (for backend: pip)
 // - Docker & docker-compose (for building and deployments)
+// - X11/GTK system libraries (for Playwright headless browsers)
 // - Git
 //
 // OPTIONAL: Install Docker Pipeline plugin for better Docker support
 //
-// To install tools on Jenkins:
-// Ubuntu/Debian:
-//   apt-get update && apt-get install -y nodejs python3 docker.io docker-compose git
+// Build from: Dockerfile.jenkins (includes all dependencies)
 // ===================================================
 
 pipeline {
@@ -60,9 +57,49 @@ pipeline {
                         echo "🧪 Running frontend unit tests..."
                         sh 'npm run test -- --run --reporter=verbose 2>&1 || true'
                         
-                        echo "⏭️  Skipping Playwright E2E tests in CI..."
-                        echo "   ℹ️  E2E tests require Node.js 20+ and system X11 libraries"
-                        echo "   ✅ Run 'npm run e2e' locally before pushing to test E2E"
+                        echo "🎭 Installing Playwright browsers..."
+                        sh 'npx playwright install chromium firefox webkit'
+                        
+                        echo "🎭 Running Playwright E2E tests..."
+                        sh '''
+                            # Start dev server in background
+                            npm run dev > /tmp/dev-server.log 2>&1 &
+                            DEV_PID=$!
+                            sleep 8
+                            
+                            # Check if dev server started successfully
+                            if ! kill -0 $DEV_PID 2>/dev/null; then
+                                echo "❌ Dev server failed to start!"
+                                cat /tmp/dev-server.log
+                                exit 1
+                            fi
+                            
+                            # Run Playwright tests with proper error handling
+                            npx playwright test || TEST_RESULT=$?
+                            
+                            # Kill dev server
+                            kill $DEV_PID 2>/dev/null || true
+                            wait $DEV_PID 2>/dev/null || true
+                            
+                            exit ${TEST_RESULT:-0}
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        if (fileExists('frontend/playwright-report/index.html')) {
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'frontend/playwright-report',
+                                reportFiles: 'index.html',
+                                reportName: '🎭 Playwright E2E Report'
+                            ])
+                            echo "✅ Playwright report published"
+                        }
                     }
                 }
             }
