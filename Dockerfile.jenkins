@@ -19,6 +19,10 @@ RUN apt-get install -y \
     ca-certificates \
     build-essential
 
+# Remove pre-installed Node.js 18 from base image
+RUN apt-get remove -y nodejs npm || true && \
+    apt-get autoremove -y
+
 # Add NodeSource repository and install Node.js 20 (required for Vite 7+)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
