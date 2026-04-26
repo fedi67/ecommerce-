@@ -70,8 +70,8 @@ describe('LandingPage', () => {
     
     renderWithRouter(<LandingPage />)
     
-    // Initial slide
-    expect(screen.getByText('L\'Essentiel Hiver')).toBeInTheDocument()
+    // Initial slide (text is uppercase with full French name)
+    expect(screen.getByText(/L'ESSENTIEL HIVERNALE/i)).toBeInTheDocument()
     
     // Fast forward time
     vi.advanceTimersByTime(8000)
