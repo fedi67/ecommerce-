@@ -54,11 +54,29 @@ pipeline {
                         echo "🧪 Running frontend unit tests..."
                         sh 'npm run test -- --run --reporter=verbose 2>&1 || true'
                         
-                        echo "🎭 Installing Playwright..."
-                        sh 'npx playwright install --with-deps 2>&1 || true'
+                        echo "🎭 Installing Playwright browsers..."
+                        sh '''
+                            # Install browsers without asking for sudo
+                            npx playwright install chromium firefox webkit 2>&1 || true
+                            # Fallback: try with system deps
+                            npx playwright install-deps 2>&1 || true
+                        '''
                         
                         echo "🎭 Running Playwright E2E tests..."
-                        sh 'npx playwright test 2>&1 || true'
+                        sh '''
+                            # Start dev server in background
+                            npm run dev > /dev/null 2>&1 &
+                            DEV_PID=$!
+                            sleep 5
+                            
+                            # Run Playwright tests
+                            npx playwright test 2>&1 || TEST_RESULT=$?
+                            
+                            # Kill dev server
+                            kill $DEV_PID 2>/dev/null || true
+                            
+                            exit ${TEST_RESULT:-0}
+                        '''
                     }
                 }
             }
