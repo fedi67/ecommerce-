@@ -29,7 +29,8 @@ describe('App', () => {
   test('renders without crashing', () => {
     render(<App />)
     
-    expect(screen.getByText(/p2m ecommerce/i)).toBeInTheDocument() // Assuming there's a title or something
+    // Check that navbar is rendered (component renders successfully)
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
 
   test('redirects to login if no token', () => {

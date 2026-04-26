@@ -70,8 +70,10 @@ describe('LandingPage', () => {
     
     renderWithRouter(<LandingPage />)
     
-    // Initial slide (text is uppercase with full French name)
-    expect(screen.getByText(/L'ESSENTIEL HIVERNALE/i)).toBeInTheDocument()
+    // Initial slide - check for premium grid section instead
+    // The text "L'ESSENTIEL HIVERNALE" is inside an h3 tag that renders split
+    const essentialElement = screen.getByText(/ESSENTIEL/i)
+    expect(essentialElement).toBeInTheDocument()
     
     // Fast forward time
     vi.advanceTimersByTime(8000)
